@@ -105,7 +105,7 @@ def run_single_experiment(clf, model_name: str, X_train: pd.DataFrame, y_train: 
         use_comet (bool, optional): Use comet.ml logging API. Defaults to False.
         do_save_preds (bool, optional): Bool to decide whehter the predictions on X_test are saved as a csv in data/preds/... Defaults to True.
     """
-    with_val = X_val and y_val
+    with_val = X_val is not None and y_val is not None
     if use_comet and not with_val:
         print('Validation set is necessary to log metrics to Comet')
         return
@@ -129,9 +129,6 @@ def run_single_experiment(clf, model_name: str, X_train: pd.DataFrame, y_train: 
         precision = precision_score(y_val, y_pred)
         recall = recall_score(y_val, y_pred)
 
-        print(f"Accuracy: {accuracy:.4f} \t F1: {f1:.4f}")
-
-        # these will be logged to your sklearn-demos project on Comet.ml
         params = {
             "random_state": RANDOM_SEED,
             "model_type": model_name,
@@ -141,6 +138,9 @@ def run_single_experiment(clf, model_name: str, X_train: pd.DataFrame, y_train: 
         }
 
         metrics = {"accuracy": accuracy, "f1": f1, "recall": recall, "precision": precision}
+        print('--Validation set metrics--')
+        for key,value in metrics.items():
+            print(f'{key}: {value:.4f}')
         if use_comet:
             exp.log_dataset_hash(X_train)
             exp.log_parameters(params)
