@@ -18,7 +18,7 @@ ORIG_DATA_PATH = os.path.join(os.path.dirname(__file__), "..", "data", "orig")
 PROC_DATA_PATH = os.path.join(os.path.dirname(__file__), "..", "data", "processed")
 
 
-def save_preds(preds: pd.Series, model_name: str, params: dict, metrics: dict) -> None:
+def save_preds(preds: pd.Series, model_name: str, params: dict) -> None:
     """Saves the predictions of a model with the expected format by Kaggle under data/preds/model_name.
     Also logs the hyperparams and relevent metrics in a similarly named file with .txt extension.
 
@@ -40,11 +40,10 @@ def save_preds(preds: pd.Series, model_name: str, params: dict, metrics: dict) -
     f_name = os.path.join(SAVE_PREDS_PATH, model_name, f"{dt_string}({model_name})")
     df.to_csv(f"{f_name}.csv", index=False)
     with open(f"{f_name}.txt", "w") as f:
-        pprint.pprint(metrics, f)
         pprint.pprint(params, f)
 
 
-def load_data(scaler: str = "standard", split_val=True) -> tuple:
+def load_orig_data(scaler: str = "standard", split_val=True) -> tuple:
     """Loads teh original dataset, scales it and returns the train-val split.
 
     Args:
@@ -149,4 +148,4 @@ def run_single_experiment(clf, model_name: str, X_train: pd.DataFrame, y_train: 
 
     test_preds = clf.predict(X_test)
     if do_save_preds:
-        save_preds(test_preds, model_name, params, metrics)
+        save_preds(test_preds, model_name, params)
