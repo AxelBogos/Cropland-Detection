@@ -1,5 +1,7 @@
-from sklearn.ensemble import RandomForestClassifier
 import os
+
+from sklearn.ensemble import RandomForestClassifier
+
 from models.utils import run_single_experiment
 
 clf = RandomForestClassifier()
