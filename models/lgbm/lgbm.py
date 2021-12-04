@@ -117,7 +117,7 @@ def main():
                'lambda_l2': 30, 'min_gain_to_split': 0.05652246284460086,
                'bagging_fraction': 0.8, 'feature_fraction': 0.4, 'verbose': -1}
 
-    run_experiment(params=None, do_save_preds=True, use_comet=True, use_processed=False)
+    run_experiment(params=best_params2, do_save_preds=True, use_comet=True, use_processed=False)
 
 if __name__ == "__main__":
     main()

@@ -1,3 +1,4 @@
+from comet_ml import Experiment
 import os
 from pprint import pprint
 
@@ -83,19 +84,20 @@ def run_optimization():
 
 def main():
 	best_params = {'objective': 'binary:logistic', 'use_label_encoder': True,
-               'base_score': None, 'booster': 'gbtree', 'colsample_bylevel':
-               None, 'colsample_bynode': None, 'colsample_bytree': None,
-               'gamma': 1.565090195551529e-05, 'gpu_id': None,
-               'importance_type': 'gain', 'interaction_constraints': None,
-               'learning_rate': None, 'max_delta_step': None, 'max_depth':
-               12, 'min_child_weight': None, 'monotone_constraints': None, 'n_estimators': 3882, 'n_jobs':
-               None, 'num_parallel_tree': None, 'random_state': None,
-               'reg_alpha': None, 'reg_lambda': None, 'scale_pos_weight': 1,
-               'subsample': None, 'tree_method': None, 'validate_parameters':
-               None, 'verbosity': None, 'lambda': 0.8057909191717765,
-               'alpha': 2.2192333922111406e-06, 'eta': 0.2765417444751599,
-               'grow_policy': 'depthwise', 'verbose': -1}
-	run_experiment(best_params,do_save_preds=True,use_comet=True,use_processed=False)
+	               'base_score': None, 'booster': 'gbtree', 'colsample_bylevel':
+		               None, 'colsample_bynode': None, 'colsample_bytree': None,
+	               'gamma': 1.565090195551529e-05, 'gpu_id': None,
+	               'importance_type': 'gain', 'interaction_constraints': None,
+	               'learning_rate': None, 'max_delta_step': None, 'max_depth':
+		               12, 'min_child_weight': None, 'monotone_constraints': None, 'n_estimators': 3882, 'n_jobs':
+		               None, 'num_parallel_tree': None, 'random_state': None,
+	               'reg_alpha': None, 'reg_lambda': None, 'scale_pos_weight': 1,
+	               'subsample': None, 'tree_method': None, 'validate_parameters':
+		               None, 'verbosity': None, 'lambda': 0.8057909191717765,
+	               'alpha': 2.2192333922111406e-06, 'eta': 0.2765417444751599,
+	               'grow_policy': 'depthwise', 'verbose': -1}
+
+	run_experiment(best_params, do_save_preds=True, use_comet=True, use_processed=False)
 
 
 if __name__ == "__main__":

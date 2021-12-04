@@ -138,29 +138,15 @@ def run_single_experiment(clf, model_name: str, X_train: pd.DataFrame, y_train: 
         )
     params = clf.get_params()
 
-    X, y = pd.concat([X_train, X_val]), pd.concat([y_train, y_val])
-    cv = StratifiedKFold(n_splits=5, shuffle=True, random_state=RANDOM_SEED)
-    f1_scores = np.empty(5)
-    accuracy_scores = np.empty(5)
-    precision_scores = np.empty(5)
-    recall_scores = np.empty(5)
-
     print('Evaluating validation metrics...')
-    for idx, (train, val) in tqdm(enumerate(cv.split(X, y)), total=5, desc=' cross-val folds'):
-        X_train, X_val = X.iloc[train], X.iloc[val]
-        y_train, y_val = y[train], y[val]
-        clf.fit(X_train, y_train)
-        y_pred = clf.predict(X_val)
+    clf.fit(X_train, y_train)
+    y_pred = clf.predict(X_val)
 
-        f1_scores[idx] = f1_score(y_val, y_pred)
-        accuracy_scores[idx] = accuracy_score(y_val, y_pred)
-        precision_scores[idx] = precision_score(y_val, y_pred)
-        recall_scores[idx] = recall_score(y_val, y_pred)
+    f1 = f1_score(y_val, y_pred)
+    accuracy = accuracy_score(y_val, y_pred)
+    precision = precision_score(y_val, y_pred)
+    recall= recall_score(y_val, y_pred)
 
-    f1 = np.mean(f1_scores)
-    accuracy = np.mean(accuracy_scores)
-    precision = np.mean(precision_scores)
-    recall = np.mean(recall_scores)
 
     params = {
         "random_state": RANDOM_SEED,
@@ -182,7 +168,7 @@ def run_single_experiment(clf, model_name: str, X_train: pd.DataFrame, y_train: 
         exp.add_tag(model_name)
 
     if do_save_preds:
-        # Retrain on whole training dataset
+        print('Retraining on whole dataset and save preds...')
         X, y = pd.concat([X_train, X_val]), pd.concat([y_train, y_val])
         clf.fit(X, y)
         test_preds = clf.predict(X_test)
