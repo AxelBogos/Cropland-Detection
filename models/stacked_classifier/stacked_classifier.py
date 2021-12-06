@@ -1,3 +1,4 @@
+from comet_ml import Experiment
 import os
 
 import lightgbm as lgbm
@@ -16,7 +17,7 @@ def run_experiment(models=None, do_save_preds=False, use_comet=False, use_proces
     else:
         X_train, X_val, y_train, y_val, X_test = load_orig_data(scaler='standard', split_val=True)
 
-    clf = StackingClassifier(estimators=models,final_estimator=LogisticRegression(), cv=5)
+    clf = StackingClassifier(estimators=models, final_estimator=LogisticRegression(), cv=5)
     run_single_experiment(clf=clf, model_name=name, X_train=X_train, y_train=y_train,
                           X_val=X_val, y_val=y_val, X_test=X_test, use_comet=use_comet, do_save_preds=do_save_preds)
 
