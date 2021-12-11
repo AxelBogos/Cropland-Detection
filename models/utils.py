@@ -1,3 +1,4 @@
+import torch
 from comet_ml import Experiment
 import os
 import pprint
@@ -33,7 +34,10 @@ def save_preds(preds: pd.Series, model_name: str, params: dict, metrics: dict, e
         metrics (comet_ml Experiment): logs preds as an asset
     """
     df = pd.DataFrame(range(len(preds)), columns=["S.No"])
-    df["LABELS"] = preds.astype(int)
+    if type(preds) is not torch.Tensor:
+        df["LABELS"] = preds.astype(int)
+    else:
+        df["LABELS"] = preds
     now = datetime.now()
     dt_string = now.strftime("%d-%m-%Y-%H:%M")
     counts = np.unique(preds, return_counts=True)
