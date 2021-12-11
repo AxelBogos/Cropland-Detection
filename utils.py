@@ -46,7 +46,7 @@ def agg_data(df: pd.DataFrame, agg_size: int = 4, train = True, verbose = True, 
             agg_df.to_csv("./data/processed/" + filename)
         else: 
             filename = "test_" + str(agg_size) + ".csv"
-            agg_df.to_csv("./data/processed" + filename)
+            agg_df.to_csv("./data/processed/" + filename)
 
 train = pd.read_csv("./data/orig/train.csv", index_col= 0)
 test = pd.read_csv("./data/orig/test.csv", index_col= 0)
