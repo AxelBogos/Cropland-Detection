@@ -1,3 +1,4 @@
+from comet_ml import Experiment
 import os
 from pprint import pprint
 
@@ -10,10 +11,10 @@ from sklearn.neural_network import MLPClassifier
 from models.utils import run_single_experiment, load_orig_data, load_processed_data
 
 
-def run_experiment(params=None, do_save_preds=False, use_comet=False, use_processed=False):
+def run_experiment(params=None, do_save_preds=False, use_comet=False, processed_version=None):
     name = os.path.basename(__file__).split('.')[0]
-    if use_processed:
-        X_train, X_val, y_train, y_val, X_test = load_processed_data(version='correlated_feature_dropped', split_val=True)
+    if processed_version is not None:
+        X_train, X_val, y_train, y_val, X_test = load_processed_data(version=processed_version, split_val=True)
     else:
         X_train, X_val, y_train, y_val, X_test = load_orig_data(scaler='standard', split_val=True)
     if params is None:
@@ -70,12 +71,12 @@ def run_optimization():
 
 
 def main():
-    params = {'alpha': 0.0008850441826891523,
-    'learning_rate': 'adaptive',
-    'learning_rate_init': 1.7016199573556555e-05,
-    'momentum': 0.5428082178458562,
-    'hidden_layer_sizes': (132)}
-    run_experiment(params, True, True, False)
+    # params = {'alpha': 0.0008850441826891523,
+    # 'learning_rate': 'adaptive',
+    # 'learning_rate_init': 1.7016199573556555e-05,
+    # 'momentum': 0.5428082178458562,
+    # 'hidden_layer_sizes': (132)}
+    run_experiment(params=None, do_save_preds=True, use_comet=True, processed_version='aggregated_4')
 
 
 if __name__ == "__main__":

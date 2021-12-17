@@ -56,9 +56,37 @@ def save_preds(preds: pd.Series, model_name: str, params: dict, metrics: dict, e
         exp.set_name(f"{dt_string}({model_name})")
 
 
-def load_processed_data(version: str = 'correlated_feature_dropped', split_val=True):
+def load_processed_data(version: str = 'correlated_feature_dropped', split_val=True, scaler = "standard"):
     train = pd.read_csv(os.path.join(PROC_DATA_PATH, version, "train.csv"))
     X_test = pd.read_csv(os.path.join(PROC_DATA_PATH, version, "test.csv"))
+
+    # Remove useless index column
+    train = train.drop(columns=["Unnamed: 0"])
+    X_test = X_test.drop(columns=["S.No"])
+
+    if scaler == "standard":
+        scaler = StandardScaler()
+    elif scaler == "minmax":
+        scaler = MinMaxScaler()
+    else:
+        scaler = None
+
+    if scaler is not None:
+        columns_to_normalize = train.columns.drop("LABELS")
+
+        # Fit transform train
+        temp_x = train[columns_to_normalize].values
+        temp_x = scaler.fit_transform(temp_x)
+        df_temp = pd.DataFrame(temp_x, columns=columns_to_normalize, index=train.index)
+        train[columns_to_normalize] = df_temp
+
+        # Transform test
+        temp_x = X_test[columns_to_normalize].values
+        x_scaled = scaler.transform(temp_x)
+        df_temp = pd.DataFrame(
+            x_scaled, columns=columns_to_normalize, index=X_test.index
+        )
+        X_test[columns_to_normalize] = df_temp
 
     X, y = train.drop(columns=["LABELS"]), train["LABELS"]
     if split_val:
@@ -68,7 +96,7 @@ def load_processed_data(version: str = 'correlated_feature_dropped', split_val=T
         return X, y, X_test
 
 
-def load_orig_data(scaler: str = "standard", split_val=True) -> tuple:
+def load_orig_data(scaler = "standard", split_val=True) -> tuple:
     """Loads teh original dataset, scales it and returns the train-val split.
 
     Args:

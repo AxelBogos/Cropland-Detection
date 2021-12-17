@@ -12,22 +12,21 @@ from sklearn.model_selection import StratifiedKFold
 from models.utils import run_single_experiment, load_orig_data, load_processed_data
 
 
-def run_experiment(params=None, do_save_preds=False, use_comet=False, use_processed=False):
+def run_experiment(params=None, do_save_preds=False, use_comet=False, processed_version=None):
 	name = os.path.basename(__file__).split('.')[0]
-	if use_processed:
-		X_train, X_val, y_train, y_val, X_test = load_processed_data(version='correlated_feature_dropped',
-		                                                             split_val=True)
+	if processed_version is not None:
+		X_train, X_val, y_train, y_val, X_test = load_processed_data(version=processed_version, split_val=True)
 	else:
-		X_train, X_val, y_train, y_val, X_test = load_orig_data(scaler='standard', split_val=True)
+		X_train, X_val, y_train, y_val, X_test = load_orig_data(scaler=None, split_val=True)
 	if params is None:
 		clf = xgb.XGBClassifier(objective="binary:logistic", verbose=-1)
 	else:
 		clf = xgb.XGBClassifier(**params)
-	run_single_experiment(clf=clf, model_name=name, X_train=X_train, y_train=y_train,
-	                      X_val=X_val, y_val=y_val, X_test=X_test, use_comet=use_comet, do_save_preds=do_save_preds)
+	run_single_experiment(clf=clf, model_name=name, X_train=X_train, y_train=y_train, X_val=X_val, y_val=y_val,
+	                      X_test=X_test, use_comet=use_comet, do_save_preds=do_save_preds)
 
 
-def run_optimization():
+def run_optimization(save_plots = False, processed_version=None):
 	def objective(trial, X, y):
 
 		param_grid = {
@@ -66,20 +65,32 @@ def run_optimization():
 			cv_scores[idx] = score
 		return np.mean(cv_scores)
 
-	X, y, X_test = load_orig_data(scaler='standard', split_val=False)
+	if processed_version is None:
+		X, y, X_test = load_orig_data(scaler='standard', split_val=False)
+	else:
+		X, y, X_test = load_processed_data(processed_version, split_val=False)
+
 	study = optuna.create_study(pruner=optuna.pruners.MedianPruner(n_warmup_steps=5),
 	                            direction="minimize", study_name="XGB Classifier")
 	func = lambda trial: objective(trial, X, y)
-	study.optimize(func, n_trials=75)
+	study.optimize(func, n_trials=150)
+
+	if save_plots:
+		# Save study plots
+		fig = optuna.visualization.plot_optimization_history(study)
+		fig.write_html('optuna_optim_history.html')
+		fig = optuna.visualization.plot_param_importances(study)
+		fig.write_html('hyperparam_importance.html')
+
 	print(f"\tBest params:")
 	pprint(study.best_params)
 	params = study.best_params
-
-	name = os.path.basename(__file__).split('.')[0]
-	clf = xgb.XGBClassifier(**params, verbose=-1)
-	X_train, X_val, y_train, y_val, X_test = load_orig_data(scaler='standard', split_val=True)
-	run_single_experiment(clf=clf, model_name=name, X_train=X, y_train=y, X_val=X_val, y_val=y_val,
-	                      X_test=X_test, use_comet=True, do_save_preds=True)
+	return params
+	# name = os.path.basename(__file__).split('.')[0]
+	# clf = xgb.XGBClassifier(**params, verbose=-1)
+	# X_train, X_val, y_train, y_val, X_test = load_orig_data(scaler='standard', split_val=True)
+	# run_single_experiment(clf=clf, model_name=name, X_train=X, y_train=y, X_val=X_val, y_val=y_val,
+	#                       X_test=X_test, use_comet=True, do_save_preds=True)
 
 
 def main():
@@ -97,7 +108,9 @@ def main():
 	               'alpha': 2.2192333922111406e-06, 'eta': 0.2765417444751599,
 	               'grow_policy': 'depthwise', 'verbose': -1}
 
-	run_experiment(best_params, do_save_preds=True, use_comet=True, use_processed=False)
+	# run_experiment(best_params, do_save_preds=True, use_comet=True, processed_version=None)
+	params = run_optimization(save_plots=True)
+	run_experiment(params=params, do_save_preds=True, use_comet=True)
 
 
 if __name__ == "__main__":
