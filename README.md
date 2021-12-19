@@ -1,7 +1,8 @@
 
 # Data Challenge 2
 
-[Repo](https://github.com/AxelBogos/IFT6390-Data-Challenge-2) for the 2nd data challenge of IFT6390. 
+### [Repo](https://github.com/AxelBogos/IFT6390-Data-Challenge-2) for the 2nd data challenge of IFT6390. 
+### [Comet.ml Experiment workspace](https://www.comet.ml/ift6390-datachallenge-2/data-challenge-2/view/klyObIXPQL8JyGWTd2mA7VI7J/panels)
 
 
 ## Authors
