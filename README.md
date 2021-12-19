@@ -44,7 +44,5 @@ To run this project, you will need to add the following environment variables to
 ## Running models
 Each model is in a distinct directory in `./models`. All models (except `Neural Networks`) have functions `run_experiment` and `run_optimization`, which as their name indicate run a single experiment or the whole optimization. See the docstrings of their respective implementations for parameters.
 
-## Appendix
 
-Any additional information goes here
 
