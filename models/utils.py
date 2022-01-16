@@ -7,7 +7,6 @@ from datetime import datetime
 import numpy as np
 import pandas as pd
 import pickle
-from comet_ml import Experiment
 from dotenv import load_dotenv
 from sklearn.metrics import f1_score, accuracy_score, precision_score, recall_score
 from sklearn.model_selection import train_test_split, StratifiedKFold
